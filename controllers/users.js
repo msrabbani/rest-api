@@ -29,12 +29,27 @@ const createUser = function(req,res){
 const deleteUser = function(req,res){
     modelUser.User.destroy({
         where: {id:`${req.params.id}`}
-    }).then(()=>{
-        res.send('DELETE request to homepage')
+    }).then((data_user)=>{
+        res.send(data_user)
     })
 }
 
+const updateUser = function(req,res){
+    modelUser.User.update({
+        name:req.body.name,
+        address:req.body.address,
+        phone_number:req.body.phone_number,
+        createdAt:new Date(),
+        updateAt:new Date()
+    },{
+        where:{id:req.params.id}
+    }).then(data_user1=>{
+        modelUser.User.findById(req.params.id).then(data_user2=>{
+            res.send(`Data ${data_user2.name} berhasil di update`)
+        })
+    })
+}
 
 module.exports = {
-    getAllUsers, getUserById, createUser, deleteUser
+    getAllUsers, getUserById, createUser, deleteUser, updateUser
 }
