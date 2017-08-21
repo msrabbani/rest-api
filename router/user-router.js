@@ -3,13 +3,12 @@ const router = express('Router');
 const userController = require('../controllers/users');
 const middleware = require('../helper/auth')
 
-router.get('/users', middleware, userController.getAllUsers);
-router.get('/users/:id', userController.getUserById)
-router.post('/users', userController.createUser)
-router.delete('/users/:id', userController.deleteUser)
-router.put('/users/:id', userController.updateUser)
-
-// router.post('/signup', userController.signupUser)
+router.post('/signup', userController.signUpUser)
 router.post('/signin', userController.signInUser)
+router.get('/users', middleware.adminAuth, userController.getAllUsers);
+router.get('/users/:id', middleware.nonAdminAuth,userController.getUserById)
+router.post('/users', middleware.adminAuth,userController.createUser)
+router.delete('/users/:id', middleware.adminAuth,userController.deleteUser)
+router.put('/users/:id', middleware.nonAdminAuth,userController.updateUser)
 
 module.exports = router

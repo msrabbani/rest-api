@@ -5,33 +5,48 @@ var bcrypt = require('bcrypt');
 var salt = bcrypt.genSaltSync(7);
 
 
-// const signUpUser = function(req,res){
-// }
-
+const signUpUser = function(req,res){
+    modelUser.User.create({
+        name:req.body.name,
+        address:req.body.address,
+        phone_number:req.body.phone_number,
+        password:req.body.password,
+        username:req.body.username,
+        role:req.body.role
+    }).then((data_user)=>{
+        res.send(`data ${data_user.name} telah berhasil dibuat`)
+    }).catch(err=>{
+        res.send(err)
+    })
+}
 
 const signInUser = function(req,res){
-    modelUser.User.findOne({
-        where: {username:req.body.username}
-    })
-    .then(data_user=>{
-        // console.log("====",JSON.stringify(data_user[0].username,null,2))
-        console.log('data user: ', data_user.dataValues)
-        var token = jwt.sign({
-            username:data_user.dataValues.username,
-            role:data_user.dataValues.role
-        },'kalengabret', function(err,token){
-            if (err) {
-                // console.log('error cuy ', err);
-                res.send(err)
-            } else {
-                // console.log('ga error ', token);
-                res.send({
-                    msg: `User ${data_user.dataValues.username} sukses login`,
-                    token: token
+    // if (req.body.username != '' && req.body.password != '') {
+        modelUser.User.findOne({
+            where: {username:req.body.username}
+        })
+        .then(data_user=>{
+            if (data_user != null) {
+                var token = jwt.sign({
+                    username:data_user.username,
+                    role:data_user.role
+                },'kalengabret', function(err,token){
+                    if (err) {
+                        // console.log('error cuy ', err);
+                        res.send(err)
+                    } else {
+                        // console.log('ga error ', token);
+                        res.send({
+                            msg: `User ${data_user.dataValues.username} sukses login`,
+                            token: token
+                        })
+                    }
                 })
+
+            }else {
+                res.send('data kosong!')
             }
         })
-    })
 }
 
 const getAllUsers = function(req,res){
@@ -92,5 +107,5 @@ const updateUser = function(req,res){
 }
 
 module.exports = {
-    getAllUsers, getUserById, createUser, deleteUser, updateUser, signInUser
+    getAllUsers, getUserById, createUser, deleteUser, updateUser, signInUser, signUpUser
 }
